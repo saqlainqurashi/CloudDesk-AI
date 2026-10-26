@@ -9,9 +9,10 @@ CloudDesk AI is a document workspace for uploading files, viewing extracted text
 - View extracted text and check document processing status.
 - Download original files using short-lived S3 links.
 - Generate document summaries with Google Gemini.
+- Ask questions about a selected document and receive answers grounded in its extracted text.
 - Store document metadata in PostgreSQL and original files in S3.
 
-Scanned PDFs and image files are accepted, but OCR is not currently implemented; these files are marked as needing OCR. Text extraction is limited to 1,000,000 characters per document, and summarization uses at most the first 100,000 characters.
+Scanned PDFs and image files are accepted, but OCR is not currently implemented; these files are marked as needing OCR and cannot be summarized or queried until text is available. Text extraction is limited to 1,000,000 characters per document. Summarization and question answering send at most the first 100,000 extracted characters to Gemini. Questions can contain up to 1,000 characters.
 
 ## Requirements
 
@@ -33,7 +34,7 @@ Scanned PDFs and image files are accepted, but OCR is not currently implemented;
    GEMINI_MODEL=gemini-3.5-flash-lite
    ```
 
-   Use credentials for an AWS identity with access to the configured bucket. Keep `.env` private and never commit real credentials. `DATABASE_URL` is set by Docker Compose for its local PostgreSQL service.
+   Use credentials for an AWS identity with access to the configured bucket. Keep `.env` private and never commit real credentials. `DATABASE_URL` is set by Docker Compose for its PostgreSQL service.
 
 2. From the repository root, build and start the application:
 
@@ -41,7 +42,7 @@ Scanned PDFs and image files are accepted, but OCR is not currently implemented;
    docker compose up --build
    ```
 
-3. Open the frontend at <http://localhost:5173>. The API is at <http://localhost:8000>, with interactive documentation at <http://localhost:8000/docs> and a health check at <http://localhost:8000/api/health>.
+3. Access the frontend through the host or domain configured for your environment on port `5173`. The backend API is exposed on port `8000`; its interactive documentation is available at `/docs`, and its health check is at `/api/health` on the API host.
 
 To stop the services, press `Ctrl+C`, then run:
 
@@ -61,6 +62,7 @@ PostgreSQL data is kept in the `postgres_data` Docker volume. To remove the cont
 | `GET` | `/api/documents/{document_id}/text` | Get extracted text and processing status |
 | `GET` | `/api/documents/{document_id}/download` | Redirect to a temporary S3 download link |
 | `POST` | `/api/documents/{document_id}/summary` | Generate or retrieve a cached Gemini summary |
+| `POST` | `/api/documents/{document_id}/ask` | Ask a question about the document using Gemini; send JSON such as `{"question":"What are the main findings?"}` |
 
 ## Technology
 

@@ -35,6 +35,9 @@ export default function App() {
   const [textError, setTextError] = useState("");
   const [summary, setSummary] = useState("");
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [question, setQuestion] = useState("");
+const [answer, setAnswer] = useState("");
+const [questionLoading, setQuestionLoading] = useState(false);
 
   useEffect(() => {
   if (selectedDocument) {
@@ -176,6 +179,48 @@ export default function App() {
       setSummaryLoading(false);
     }
   }
+  
+async function handleAskQuestion(event) {
+  event.preventDefault();
+
+  if (!selectedDocument || !question.trim()) return;
+
+  setAnswer("");
+  setTextError("");
+  setQuestionLoading(true);
+
+  try {
+    const response = await fetch(
+      `${API}/documents/${selectedDocument.id}/ask`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: question.trim(),
+        }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.detail || "Could not answer the question."
+      );
+    }
+
+    setAnswer(result.answer);
+  } catch (error) {
+    setTextError(
+      error.message || "Could not answer the question."
+    );
+  } finally {
+    setQuestionLoading(false);
+  }
+}
+
 
 
   function closeViewer() {
@@ -184,6 +229,9 @@ export default function App() {
     setTextError("");
     setSummary("");
     setSummaryLoading(false);
+    setQuestion("");
+    setAnswer("");
+    setQuestionLoading(false);
   }
 
   return (
@@ -359,6 +407,37 @@ export default function App() {
               <div className="summary-content">{summary}</div>
             </div>
           )}
+          
+        <div className="qa-panel">
+          <h3>Ask about this document</h3>
+
+          <form onSubmit={handleAskQuestion}>
+            <textarea
+              value={question}
+              onChange={(event) => setQuestion(event.target.value)}
+              placeholder="e.g. What are the main findings?"
+              maxLength={1000}
+              rows={3}
+              required
+            />
+
+            <button
+              type="submit"
+              className="view-button"
+              disabled={questionLoading || !question.trim() || textLoading}
+            >
+              {questionLoading ? "Thinking..." : "Ask question"}
+            </button>
+          </form>
+
+          {answer && (
+            <div className="answer-panel">
+              <h4>Answer</h4>
+              <div className="answer-content">{answer}</div>
+            </div>
+          )}
+        </div>
+
         </section>
       )}
 

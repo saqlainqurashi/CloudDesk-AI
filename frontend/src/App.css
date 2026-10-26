@@ -400,3 +400,60 @@ footer {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+
+
+.qa-panel {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #494064;
+  border-radius: 12px;
+  background: #201d2c;
+}
+
+.qa-panel h3,
+.answer-panel h4 {
+  margin: 0 0 14px;
+  color: #c6baff;
+}
+
+.qa-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qa-panel textarea {
+  width: 100%;
+  padding: 12px;
+  resize: vertical;
+  border: 1px solid #464052;
+  border-radius: 8px;
+  background: #111319;
+  color: #edf0f7;
+  line-height: 1.6;
+}
+
+.qa-panel textarea:focus {
+  outline: 2px solid #9581ff;
+  outline-offset: 1px;
+}
+
+.qa-panel button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.answer-panel {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 8px;
+  background: #151720;
+}
+
+.answer-content {
+  color: #e2e7f0;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
